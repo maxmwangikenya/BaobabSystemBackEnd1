@@ -1,17 +1,19 @@
 const express = require('express');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
+const cors = require('cors')
 
 const app = express();
-const port = 3000;
+const port = 5000;
 
 app.use(bodyParser.json());
+app.use(cors())
 
 // Database Connection
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root', // Change to your MySQL user
-    password: '32662272', // Change to your MySQL password
+    password: '12345678', // Change to your MySQL password
     database: 'baobabrun'
 });
 
@@ -36,6 +38,13 @@ app.post('/sponsors', (req, res) => {
     });
 });
 
+app.get('/sponsors', (req, res) => {
+    db.query('SELECT * FROM sponsors', (err, results) => {
+        if (err) return res.status(500).send(err);
+        res.json(results);
+    });
+});
+
 // Create a Child
 app.post('/children', (req, res) => {
     const { name, age } = req.body;
@@ -44,6 +53,15 @@ app.post('/children', (req, res) => {
         res.json({ message: 'Child added', id: result.insertId });
     });
 });
+
+// Get All Children
+app.get('/children', (req, res) => {
+    db.query('SELECT * FROM children', (err, results) => {
+        if (err) return res.status(500).send(err);
+        res.json(results);
+    });
+});
+
 
 // Pledge an Amount for a Child (New API)
 app.post('/pledge', (req, res) => {
